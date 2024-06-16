@@ -28,7 +28,7 @@ To run this project, you'll need to have Python installed along with `poetry` fo
     git clone https://github.com/chiaraalcantara/secured
     cd secured
     ```
-
+<!-- 
 2. **Install `poetry`**:
     Install `poetry` using the official installation script:
     ```sh
@@ -55,7 +55,7 @@ To run this project, you'll need to have Python installed along with `poetry` fo
     Ensure that all dependencies are installed correctly by checking the installed packages:
     ```sh
     poetry show
-    ```
+    ``` -->
 
 
 <!-- ## Usage
