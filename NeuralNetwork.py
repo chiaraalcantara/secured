@@ -69,14 +69,29 @@ class NeuralNetwork:
         output_gradient = self.linear1.backward(output_gradient, learning_rate)
 
     def test(self, X, Y):
+        true_positives = np.zeros(10)
+        false_positives = np.zeros(10)
+        false_negatives = np.zeros(10)
         correct, total = 0, 0
+
         for i in range(len(X)):
             Y_pred = np.argmax(self.forward(X[i:i+1]))
             Y_actual = np.argmax(Y[i])
-            correct += int(Y_pred == Y_actual)
+
+            if Y_pred == Y_actual:
+                correct += 1
+                true_positives[Y_actual] += 1
+            else:
+                false_positives[Y_pred] += 1
+                false_negatives[Y_actual] += 1
             total += 1
-        return correct / total
-    
+
+        accuracy = correct / total
+        precision = np.mean(true_positives / (true_positives + false_positives + 1e-10))
+        recall = np.mean(true_positives / (true_positives + false_negatives + 1e-10))
+
+        return accuracy, precision, recall
+
     def train(self, X_train, Y_train, X_test, Y_test, epochs, learning_rate, batch_size):
         for epoch in range(epochs):
             for i in range(0, len(X_train), batch_size):
@@ -84,11 +99,14 @@ class NeuralNetwork:
                 Y_batch = Y_train[i:i+batch_size]
                 output = self.forward(X_batch)
                 self.backward(X_batch, Y_batch, output, learning_rate)
+            
+            train_acc, train_prec, train_rec = self.test(X_train, Y_train)
+            test_acc, test_prec, test_rec = self.test(X_test, Y_test)
 
-            train_acc = self.test(X_train, Y_train)
-            test_acc = self.test(X_test, Y_test)
-
-            print(f"Epoch {epoch+1}: Train Acc: {train_acc:.4f}, Test Acc: {test_acc:.4f}")
+            print(f"Epoch {epoch+1}: Train Acc: {train_acc:.4f}, Precision: {train_prec:.4f}, Recall: {train_rec:.4f}")
+            print(f"Epoch {epoch+1}: Test Acc: {test_acc:.4f}, Precision: {test_prec:.4f}, Recall: {test_rec:.4f}")
+            print()
+            learning_rate *= 0.99  # Learning rate decay
 
 def load_mnist_images(filename):
     with gzip.open(filename, 'rb') as f:
