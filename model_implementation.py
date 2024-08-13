@@ -19,21 +19,6 @@ model = load_model('facenet_keras.h5')
 #     """
 
 
-
-def get_face_embedding(face_image : np.ndarray):
-    """
-    Purpose: 
-        - function to extract and normalize face embeddings as 160x160 ndarray 
-        - adds batch dimension 
-        - feature extraction 
-
-    Args: 
-        - face_image (np.ndarray): ndarray of any size 
-
-    Raises:
-
-    """
-
 # def upload_face_embedding(face_embedding : np.ndarray): 
 #     """
 #     Purpose: 
@@ -47,11 +32,16 @@ def get_face_embedding(face_image : np.ndarray):
 
 #     """
 
+"""
+Feel free to change function signatures if required to complete these funcitons! 
+
+"""
+
 
 def detect_faces(image_path : str):
     """
     Purpose: 
-        - detects faces in an image from local directory (future will get from R2)
+        - detects faces in an image from local directory 
 
     Args: 
         - image_path (str): file path to image 
@@ -61,4 +51,18 @@ def detect_faces(image_path : str):
 
     """
 
+def get_face_embedding(image_path : str):
+    """
+    Purpose: 
+        - function to extract face from image and normalize face embeddings from an image as 160x160 ndarray 
+        - adds batch dimension 
+        - feature extraction 
+
+    Args: 
+        - image_path (str): file path to image 
+
+    Raises:
+        - FileNotFoundError : if image is not found from source (folder)
+
+    """
 
