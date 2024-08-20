@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "secured"
+version = "0.1.0"
+description = ""
+authors = ["Chiara Alcantara <92611941+chiaraalcantara@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+tensorflow = "^2.17.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
