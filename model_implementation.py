@@ -37,7 +37,7 @@ Feel free to change function signatures if required to complete these funcitons!
 
 """
 
-
+# suggested model: yolov7
 def detect_faces(image_path : str):
     """
     Purpose: 
@@ -51,6 +51,7 @@ def detect_faces(image_path : str):
 
     """
 
+# suggested model: arcface 
 def get_face_embedding(image_path : str):
     """
     Purpose: 
