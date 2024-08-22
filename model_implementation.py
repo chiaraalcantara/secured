@@ -51,6 +51,9 @@ def detect_faces(image_path : str, conf_thres: int = 0.4) -> bool:
     Raises:
         - FileNotFoundError : if image is not found from source (folder)
     """
+    if not os.path.exists(image_path):
+        raise FileNotFoundError(f"Image not found at {image_path}")
+    
     with open('yolov7.pkl', 'rb') as model_file:
         model = joblib.load(model_file)
     img = Image.open(image_path)
