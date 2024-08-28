@@ -2,9 +2,13 @@ from tensorflow.keras.models import load_model
 import numpy as np
 from PIL import Image
 import joblib
+import os
+# sys.path.append(r'path to yolov7 package')
+from yolov7.models.experimental import attempt_load
 
 # Load the pre-trained FaceNet model
-#model = load_model('facenet_keras.h5')
+model = load_model('facenet_keras.h5')
+YOLOV7_WEIGHTS = r'path to yolov7 package / yolov7.pt'
 
 # def get_picture(file_path : str): 
 #     """
@@ -54,8 +58,7 @@ def detect_faces(image_path : str, conf_thres: int = 0.4) -> bool:
     if not os.path.exists(image_path):
         raise FileNotFoundError(f"Image not found at {image_path}")
     
-    with open('yolov7.pkl', 'rb') as model_file:
-        model = joblib.load(model_file)
+    model = attempt_load(YOLOV7_WEIGHTS, map_location='cpu')
     img = Image.open(image_path)
     results = model(img)
 
