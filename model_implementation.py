@@ -5,6 +5,8 @@ import joblib
 import os
 # sys.path.append(r'path to yolov7 package')
 from yolov7.models.experimental import attempt_load
+from insightface.app import FaceAnalysis
+import cv2
 
 # Load the pre-trained FaceNet model
 model = load_model('facenet_keras.h5')
@@ -87,4 +89,23 @@ def get_face_embedding(image_path : str):
         - FileNotFoundError : if image is not found from source (folder)
 
     """
+    if not os.path.exists(image_path):
+        raise FileNotFoundError(f"Image not found at {image_path}")
+    
+    app = FaceAnalysis()
+    app.prepare(ctx_id=0)  # ctx_id=0 for CPU, set to a GPU ID for GPU usage
+    image = cv2.imread(image_path)
+    if image is None:
+        raise FileNotFoundError(f"Image not found at path: {image_path}")
+    image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    faces = app.get(image_rgb)
+    if len(faces) == 0:
+        raise ValueError("No face detected in the image.")
+    # Assume we only care about the first detected face
+    face = faces[0].embedding
+    # Normalize the embedding
+    face_embedding = np.array(face)
+    # Ensure the embedding is in the shape (1, 512)
+    face_embedding = face_embedding.reshape(-1)
+    return face_embedding
 
