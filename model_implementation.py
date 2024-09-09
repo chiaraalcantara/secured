@@ -3,14 +3,17 @@ import numpy as np
 from PIL import Image
 import joblib
 import os
-# sys.path.append(r'path to yolov7 package')
+import sys
+#sys.path.append(r'C:\Users\sahil\Documents')
+#sys.path.append(r'C:\Users\sahil\Documents\yolov7')
 from yolov7.models.experimental import attempt_load
 from insightface.app import FaceAnalysis
 import cv2
-
+import torch
+from torchvision import transforms
 # Load the pre-trained FaceNet model
-model = load_model('facenet_keras.h5')
-YOLOV7_WEIGHTS = r'path to yolov7 package / yolov7.pt'
+# model = load_model('facenet_keras.h5')
+YOLOV7_WEIGHTS = r"C:\Users\sahil\Documents\yolov7\yolov7.pt"
 
 # def get_picture(file_path : str): 
 #     """
@@ -61,16 +64,25 @@ def detect_faces(image_path : str, conf_thres: int = 0.4) -> bool:
         raise FileNotFoundError(f"Image not found at {image_path}")
     
     model = attempt_load(YOLOV7_WEIGHTS, map_location='cpu')
+    model.eval()
     img = Image.open(image_path)
-    results = model(img)
+    transform = transforms.Compose([transforms.ToTensor()])
+    with torch.no_grad():
+        results = model(transform(img.resize((640, 640))).unsqueeze(0))
+    predictions = results[0][0]  # Extract the first element of the results tuple
 
     face_detected = False
-    for result in results.xyxy[0]:  # xyxy is a list of detections
-        class_id = int(result[-1])
-        confidence = result[-2]
-        if class_id == 0 and confidence > conf_thres:  # class '0' is 'face'
+    x1, y1, x2, y2 = 0, 0, 0, 0
+    prev_object_confidence = 0
+    for result in predictions:  # predictions contain the bounding boxes and scores
+        object_confidence = result[4].item()
+        class_probs = result[5:]
+        class_id = torch.argmax(class_probs).item()
+        if class_id == 0 and object_confidence > conf_thres:
             face_detected = True
-            break
+            if prev_object_confidence < object_confidence:
+                x1, y1, x2, y2 = result[:4]
+                prev_object_confidence = object_confidence
     
     return face_detected
 
