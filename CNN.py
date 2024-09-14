@@ -57,31 +57,39 @@ def maxpool_backward(input, grad_output, kernel_size=2, stride=2):
 
 class Linear:
     def __init__(self, input_size, output_size):
-        self.weights = np.random.randn(input_size, output_size) / np.sqrt(input_size)
-        self.bias = np.zeros((1, output_size))
+        self.weights = torch.randn(input_size, output_size) / torch.sqrt(torch.tensor(input_size, dtype=torch.float32))
+        self.weights.requires_grad = True
+        self.bias = torch.zeros((1, output_size), dtype=torch.float32)
+        self.bias.requires_grad = True
 
     def forward(self, input):
         self.input = input
-        return np.dot(input, self.weights) + self.bias
+        return torch.mm(input, self.weights) + self.bias
 
     def backward(self, output_gradient, learning_rate):
-        input_gradient = np.dot(output_gradient, np.transpose(self.weights))
-        weight_gradient = np.dot(np.transpose(self.input), output_gradient)
-        bias_gradient = np.sum(output_gradient, axis=0, keepdims=True)
+        # Gradient of the weights and biases
+        grad_weights = torch.mm(self.input.T, output_gradient)
+        grad_bias = torch.sum(output_gradient, dim=0, keepdim=True)
 
-        self.weights = self.weights - learning_rate * weight_gradient
-        self.bias = self.bias - learning_rate * bias_gradient
+        # Gradient of the input to pass to previous layers
+        input_gradient = torch.mm(output_gradient, self.weights.T)
+
+        # Update weights and biases using gradient descent
+        with torch.no_grad():
+            self.weights -= learning_rate * grad_weights
+            self.bias -= learning_rate * grad_bias
 
         return input_gradient
 
 class Sigmoid:
     def forward(self, input):
-        self.output = 1 / (1 + np.exp(-input))
+        self.output = 1 / (1 + torch.exp(-input))
         return self.output
-    
     def backward(self, output_gradient):
         return output_gradient * self.output * (1 - self.output)
 
+def cross_entropy_loss(predictions, targets):
+    return -torch.mean(torch.sum(targets * torch.log(predictions + 1e-10), dim=1))
 
 #Could potentially add more hidden layers for larger model/more accurate results
 #Ex: For 3 hidden layers, __init__ method
@@ -114,7 +122,7 @@ class NeuralNetwork:
 
     def forward(self, X):
         # Input X is of shape (batch_size, 1, 28, 28)
-        output = self.conv1.forward(np.array(X.reshape(-1, 1, 28, 28)))  # Conv2D expects 4D input
+        output = self.conv1.forward(X.view(-1, 1, 28, 28))  # Conv2D expects 4D input
         self.maxpool1_input = output
         output = self.maxpool1.forward(output)
         output = self.conv2.forward(output)
@@ -122,7 +130,7 @@ class NeuralNetwork:
         output = self.maxpool2.forward(output)
         
         # Flatten the output from maxpool2 before feeding into the linear layers
-        output = output.reshape(output.shape[0], -1)  # Flatten to (batch_size, num_features)
+        output = output.view(output.shape[0], -1)  # Flatten to (batch_size, num_features)
         
         output = self.linear1.forward(output)
         output = self.activation_function.forward(output)
@@ -139,7 +147,7 @@ class NeuralNetwork:
         output_gradient = self.linear1.backward(output_gradient, learning_rate)
         
         # Reshape gradient to match the output of maxpool2 (reverse the flattening)
-        output_gradient = output_gradient.reshape(-1, 1, 4, 4)  # (batch_size, 1, 4, 4)
+        output_gradient = output_gradient.view(-1, 1, 4, 4)  # (batch_size, 1, 4, 4)
         
         # Backprop through the convolutional and pooling layers
         output_gradient = maxpool_backward(self.maxpool2_input, output_gradient)  # No learning rate needed for MaxPool2D
@@ -148,26 +156,34 @@ class NeuralNetwork:
         output_gradient = self.conv1.backward(output_gradient, learning_rate)
 
     def test(self, X, Y):
-        true_positives = np.zeros(10)
-        false_positives = np.zeros(10)
-        false_negatives = np.zeros(10)
+        # Initialize true positives, false positives, and false negatives
+        true_positives = torch.zeros(10)
+        false_positives = torch.zeros(10)
+        false_negatives = torch.zeros(10)
         correct, total = 0, 0
 
         for i in range(len(X)):
-            Y_pred = np.argmax(self.forward(X[i:i+1]))
-            Y_actual = np.argmax(Y[i])
+            # Forward pass through the model and get predictions
+            Y_pred = torch.argmax(self.forward(X[i:i+1]), dim=1)
+            Y_actual = torch.argmax(Y[i], dim=0)
 
+            # Update counts for true positives, false positives, and false negatives
             if Y_pred == Y_actual:
                 correct += 1
                 true_positives[Y_actual] += 1
             else:
                 false_positives[Y_pred] += 1
                 false_negatives[Y_actual] += 1
+            
             total += 1
 
+        # Calculate accuracy
         accuracy = correct / total
-        precision = np.mean(true_positives / (true_positives + false_positives + 1e-10))
-        recall = np.mean(true_positives / (true_positives + false_negatives + 1e-10))
+
+        # Calculate precision and recall with a small value added to prevent division by zero
+        epsilon = 1e-10
+        precision = torch.mean(true_positives / (true_positives + false_positives + epsilon))
+        recall = torch.mean(true_positives / (true_positives + false_negatives + epsilon))
 
         return accuracy, precision, recall
 
@@ -177,6 +193,7 @@ class NeuralNetwork:
                 X_batch = X_train[i:i+batch_size]
                 Y_batch = Y_train[i:i+batch_size]
                 output = self.forward(X_batch)
+                loss = cross_entropy_loss(output, Y_batch)
                 self.backward(X_batch, Y_batch, output, learning_rate)
             
             train_acc, train_prec, train_rec = self.test(X_train, Y_train)
@@ -192,7 +209,8 @@ def load_mnist_images(filename):
         # Read metadata
         magic, num, rows, cols = struct.unpack(">IIII", f.read(16))
         # Read image data
-        images = np.frombuffer(f.read(), dtype=np.uint8).reshape(num, rows * cols)
+        image_np = np.array(np.frombuffer(f.read(), dtype=np.uint8).reshape(num, rows, cols, 1), dtype=np.float32)
+        images = torch.from_numpy(image_np)
         return images / 255.0
 
 def load_mnist_labels(filename):
@@ -200,9 +218,11 @@ def load_mnist_labels(filename):
         # Read metadata
         magic, num = struct.unpack(">II", f.read(8))
         # Read label data
-        labels = np.frombuffer(f.read(), dtype=np.uint8)
+        labels_np = np.frombuffer(f.read(), dtype=np.uint8)
+        labels_np = np.array(np.eye(10)[labels_np], dtype=np.float32)
+        labels = torch.from_numpy(labels_np)
         # One-hot encode labels
-        return np.eye(10)[labels]
+        return labels
 
 X_train = load_mnist_images(r"C:\Users\sahil\Desktop\Secured+\data\Training Set\MNIST\raw\train-images-idx3-ubyte.gz")
 Y_train = load_mnist_labels(r"C:\Users\sahil\Desktop\Secured+\data\Training Set\MNIST\raw\train-labels-idx1-ubyte.gz")
