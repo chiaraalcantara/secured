@@ -28,6 +28,8 @@ class Conv2D:
         grad_input = F.conv_transpose2d(grad_output, self.weights, stride=self.stride, padding=self.padding)
         grad_weights = F.conv2d(self.input.permute(1, 0, 2, 3), grad_output.permute(1, 0, 2, 3), padding=self.padding).permute(1, 0, 2, 3)
         grad_bias = grad_output.sum(dim=(0, 2, 3))
+        
+        # Update weights and bias
         with torch.no_grad():
             self.weights -= learning_rate * grad_weights
             self.bias -= learning_rate * grad_bias
@@ -145,6 +147,9 @@ class NeuralNetwork:
         output_gradient = self.linear2.backward(output_gradient, learning_rate)
         output_gradient = self.activation_function.backward(output_gradient)
         output_gradient = self.linear1.backward(output_gradient, learning_rate)
+        print("grads:")
+        print(self.linear2.weights.grad)
+        print(self.linear1.weights.grad)
         
         # Reshape gradient to match the output of maxpool2 (reverse the flattening)
         output_gradient = output_gradient.view(-1, 1, 4, 4)  # (batch_size, 1, 4, 4)
@@ -211,6 +216,7 @@ def load_mnist_images(filename):
         # Read image data
         image_np = np.array(np.frombuffer(f.read(), dtype=np.uint8).reshape(num, rows, cols, 1), dtype=np.float32)
         images = torch.from_numpy(image_np)
+        images.requires_grad = True
         return images / 255.0
 
 def load_mnist_labels(filename):
@@ -221,6 +227,7 @@ def load_mnist_labels(filename):
         labels_np = np.frombuffer(f.read(), dtype=np.uint8)
         labels_np = np.array(np.eye(10)[labels_np], dtype=np.float32)
         labels = torch.from_numpy(labels_np)
+        labels.requires_grad = True
         # One-hot encode labels
         return labels
 
