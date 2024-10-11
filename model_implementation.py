@@ -4,16 +4,18 @@ from PIL import Image
 import joblib
 import os
 import sys
-#sys.path.append(r'C:\Users\sahil\Documents')
-#sys.path.append(r'C:\Users\sahil\Documents\yolov7')
+sys.path.append(r'C:\Users\sahil\Documents')
+sys.path.append(r'C:\Users\sahil\Documents\yolov7')
 from yolov7.models.experimental import attempt_load
 from insightface.app import FaceAnalysis
+from utils.general import non_max_suppression
 import cv2
 import torch
 from torchvision import transforms
 # Load the pre-trained FaceNet model
 # model = load_model('facenet_keras.h5')
 YOLOV7_WEIGHTS = r"C:\Users\sahil\Documents\yolov7\yolov7.pt"
+from typing import Tuple
 
 # def get_picture(file_path : str): 
 #     """
@@ -48,7 +50,7 @@ Feel free to change function signatures if required to complete these funcitons!
 """
 
 # suggested model: yolov7
-def detect_faces(image_path : str, conf_thres: int = 0.4) -> bool:
+def detect_faces(image_path : str, conf_thres: int = 0.4) -> Tuple[bool, int, int, int, int]:
     """
     Purpose: 
         - detects faces in an image from local directory 
@@ -71,20 +73,15 @@ def detect_faces(image_path : str, conf_thres: int = 0.4) -> bool:
         results = model(transform(img.resize((640, 640))).unsqueeze(0))
     predictions = results[0][0]  # Extract the first element of the results tuple
 
-    face_detected = False
+    predictions = non_max_suppression(results[0], conf_thres)
     x1, y1, x2, y2 = 0, 0, 0, 0
-    prev_object_confidence = 0
-    for result in predictions:  # predictions contain the bounding boxes and scores
-        object_confidence = result[4].item()
-        class_probs = result[5:]
-        class_id = torch.argmax(class_probs).item()
-        if class_id == 0 and object_confidence > conf_thres:
+    face_detected = False
+    for pred in predictions[0]:
+        if pred[5] == 0:
             face_detected = True
-            if prev_object_confidence < object_confidence:
-                x1, y1, x2, y2 = result[:4]
-                prev_object_confidence = object_confidence
+            x1, y1, x2, y2 = pred[0], pred[1], pred[2], pred[3]
     
-    return face_detected
+    return face_detected, x1, y1, x2, y2 
 
 # suggested model: arcface 
 def get_face_embedding(image_path : str):
