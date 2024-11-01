@@ -119,6 +119,8 @@ class NeuralNetwork:
         self.maxpool1 = MaxPool2d(2,2)  # 2x2 pooling
         self.conv2 = Conv2D(3, 1, 5)  # 1 filter, 5x5 kernel, 3 input channels
         self.maxpool2 = MaxPool2d(2,2)  # 2x2 pooling
+        self.conv3 = Conv2D(6, 12, 3) # 12 filters, 3x3 kernel, 6 input channels
+        self.maxpool3 = MaxPool2d(2, 2) # 2x2 pooling
         self.linear1 = Linear(16, hidden_size)
         self.linear2 = Linear(hidden_size, output_size)
 
@@ -147,9 +149,9 @@ class NeuralNetwork:
         output_gradient = self.linear2.backward(output_gradient, learning_rate)
         output_gradient = self.activation_function.backward(output_gradient)
         output_gradient = self.linear1.backward(output_gradient, learning_rate)
-        print("grads:")
-        print(self.linear2.weights.grad)
-        print(self.linear1.weights.grad)
+        # print("grads:")
+        # print(self.linear2.weights.grad)
+        # print(self.linear1.weights.grad)
         
         # Reshape gradient to match the output of maxpool2 (reverse the flattening)
         output_gradient = output_gradient.view(-1, 1, 4, 4)  # (batch_size, 1, 4, 4)
@@ -194,6 +196,7 @@ class NeuralNetwork:
 
     def train(self, X_train, Y_train, X_test, Y_test, epochs, learning_rate, batch_size):
         for epoch in range(epochs):
+            print(f"Starting Epoch {epoch+1}/{epochs}")
             for i in range(0, len(X_train), batch_size):
                 X_batch = X_train[i:i+batch_size]
                 Y_batch = Y_train[i:i+batch_size]
@@ -238,4 +241,4 @@ X_test = load_mnist_images(r"C:\Users\sahil\Desktop\Secured+\data\Testing Set\MN
 Y_test = load_mnist_labels(r"C:\Users\sahil\Desktop\Secured+\data\Testing Set\MNIST\raw\t10k-labels-idx1-ubyte.gz")
 
 nn = NeuralNetwork(28*28, 100, 10)
-nn.train(X_train, Y_train, X_test, Y_test, 25, 0.01, 32)
+nn.train(X_train, Y_train, X_test, Y_test, 25, 0.0001, 32)
