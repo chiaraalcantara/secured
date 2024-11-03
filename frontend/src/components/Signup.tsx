@@ -10,7 +10,7 @@ const Signup: React.FC = () => {
   const hasNumberOrSymbol = /[0-9!@#$%^&*]/.test(password);
 
   return (
-    <div className="w-full max-w-md">
+    <div className="w-full">
       {/* Classroom ID */}
       <div className="mb-4">
         <label className="block text-gray-700 font-bold mb-2" htmlFor="classroomID">
