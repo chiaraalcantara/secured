@@ -30,7 +30,7 @@ const AuthPage = () => {
         <img
           src={lockImage}
           alt="Lock Icon"
-          className="h-60 w-auto mt-24 mb-24"
+          className="h-48 w-auto mt-24 mb-24"
         />
 
         <h2 className="text-3xl font-semibold mb-2">Seamless Management</h2>

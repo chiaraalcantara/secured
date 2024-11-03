@@ -58,7 +58,14 @@ const Signup: React.FC = () => {
         </div>
       </div>
 
-      <button className="bg-primary-500 w-full text-white py-3 rounded-lg hover:bg-secondary-900 transition-colors duration-300">Create Classroom</button>
+      <button className="bg-primary-500 w-full text-white mb-4 py-3 rounded-lg hover:bg-secondary-900 transition-colors duration-300">Create Classroom</button>
+
+       {/* OR Divider */}
+       <div className="flex items-center justify-center">
+        <div className="w-1/3 border-t border-gray-200"></div>
+        <span className="mx-2 text-sm text-gray-300">OR</span>
+        <div className="w-1/3 border-t border-gray-200"></div>
+      </div>
     </div>
   );
 };
