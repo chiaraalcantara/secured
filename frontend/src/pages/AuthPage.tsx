@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Signup from "../components/Signup";
+import { Link } from "react-router-dom";
 
 const AuthPage = () => {
   const [isSignup, setIsSignup] = useState(true);
@@ -11,7 +12,11 @@ const AuthPage = () => {
       {/* Left */}
       <div className="flex-1 bg-primary-500 rounded-2xl flex flex-col items-center justify-center text-center text-white">
         <h1 className="text-2xl font-bold mb-2">Welcome to Secured+</h1>
-        <p className="text-md">Built with passion by WAT.ai</p>
+        <p className="text-lg">Built with passion by{' '}
+          <a href="https://watai.ca" target="_blank" rel="noopener noreferrer" className="text-yellow-400 hover:text-yellow-200 transition-colors duration-300">
+            WAT.ai
+          </a>
+        </p>
 
         <img
           src={"secured.webp"}
@@ -20,7 +25,7 @@ const AuthPage = () => {
         />
 
         <h2 className="text-2xl font-semibold mb-2">Seamless Management</h2>
-        <p className="text-md">
+        <p className="text-lg">
           Effortlessly manage your students in real-time.
         </p>
       </div>
