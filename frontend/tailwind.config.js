@@ -7,9 +7,13 @@ export default {
   ],
   theme: {
     extend: {
+      // Setting colors for theme of application
       colors: {
-        primary: '#465FF1', // Custom primary color
-        secondary: '#ECF0FF', // Custom secondary color
+        primary: '#465FF1',
+        secondary: '#ECF0FF',
+      },
+      fontFamily: {
+        inter: ['Inter', 'sans-serif'], // Custom font ([primary font, fallback font])
       },
     },
   },
