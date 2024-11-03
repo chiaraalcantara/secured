@@ -1,17 +1,21 @@
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 
 const Signup: React.FC = () => {
   const [password, setPassword] = useState("");
 
-  // Helper function to check password criteria
   const isWeakPassword = password.length < 8;
-  const containsNameOrEmail = /name|email/i.test(password); // Replace with actual checks for user name or email
+  const containsNameOrEmail = /name|email/i.test(password);
   const hasMinLength = password.length >= 8;
   const hasNumberOrSymbol = /[0-9!@#$%^&*]/.test(password);
 
+  const wiggleAnimation = {
+    hidden: { opacity: 0, scale: 0.8 },
+    visible: { opacity: 1, scale: 1, rotate: [0, 15, -15, 10, -10, 5, -5, 0] },
+  };
+
   return (
     <div className="w-full">
-      {/* Classroom ID */}
       <div className="mb-4">
         <label className="block text-gray-700 font-bold mb-2" htmlFor="classroomID">
           Classroom ID
@@ -23,10 +27,9 @@ const Signup: React.FC = () => {
         />
       </div>
 
-      {/* Password */}
       <div className="mb-4">
         <div className="flex justify-between items-center">
-          <label className="text-gray-700 font-bold" htmlFor="password">
+          <label className="text-gray-700 font-bold mb-2" htmlFor="password">
             Password
           </label>
           <a href="#" className="text-gray-400 text-sm">
@@ -42,29 +45,80 @@ const Signup: React.FC = () => {
         />
       </div>
 
-      {/* Password Strength Check */}
       <div className="mb-8 space-y-1">
-        <div className={`text-sm ${isWeakPassword ? "text-red-500" : "text-green-500"}`}>
-          Password strength: {isWeakPassword ? "Weak" : "Strong"}
+        <div className="flex items-center text-sm">
+          <motion.span
+            className={`mr-2 ${isWeakPassword ? "text-secondary-600" : "text-green-500"}`}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            variants={wiggleAnimation}
+            key={isWeakPassword ? "weak" : "strong"}
+          >
+            {isWeakPassword ? "✖" : "✔"}
+          </motion.span>
+          <span className={`${isWeakPassword ? "text-secondary-600" : "text-green-500"}`}>
+            Password strength: {isWeakPassword ? "Weak" : "Strong"}
+          </span>
         </div>
-        <div className={`text-sm ${containsNameOrEmail ? "text-red-500" : "text-green-500"}`}>
-          Cannot contain your name or email address
+
+        <div className="flex items-center text-sm">
+          <motion.span
+            className={`mr-2 ${containsNameOrEmail ? "text-secondary-600" : "text-green-500"}`}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            variants={wiggleAnimation}
+            key={containsNameOrEmail ? "contains" : "no-contains"}
+          >
+            {containsNameOrEmail ? "✖" : "✔"}
+          </motion.span>
+          <span className={`${containsNameOrEmail ? "text-secondary-600" : "text-green-500"}`}>
+            Cannot contain your name or email address
+          </span>
         </div>
-        <div className={`text-sm ${hasMinLength ? "text-green-500" : "text-red-500"}`}>
-          At least 8 characters
+
+        <div className="flex items-center text-sm">
+          <motion.span
+            className={`mr-2 ${hasMinLength ? "text-green-500" : "text-secondary-600"}`}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            variants={wiggleAnimation}
+            key={hasMinLength ? "min-length" : "short-length"}
+          >
+            {hasMinLength ? "✔" : "✖"}
+          </motion.span>
+          <span className={`${hasMinLength ? "text-green-500" : "text-secondary-600"}`}>
+            At least 8 characters
+          </span>
         </div>
-        <div className={`text-sm ${hasNumberOrSymbol ? "text-green-500" : "text-red-500"}`}>
-          Contains a number or symbol
+
+        <div className="flex items-center text-sm">
+          <motion.span
+            className={`mr-2 ${hasNumberOrSymbol ? "text-green-500" : "text-secondary-600"}`}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            variants={wiggleAnimation}
+            key={hasNumberOrSymbol ? "has-symbol" : "no-symbol"}
+          >
+            {hasNumberOrSymbol ? "✔" : "✖"}
+          </motion.span>
+          <span className={`${hasNumberOrSymbol ? "text-green-500" : "text-secondary-600"}`}>
+            Contains a number or symbol
+          </span>
         </div>
       </div>
 
-      <button className="bg-primary-500 w-full text-white mb-4 py-3 rounded-lg hover:bg-secondary-900 transition-colors duration-300">Create Classroom</button>
+      <button className="bg-primary-500 w-full text-white mb-4 py-3 rounded-lg hover:bg-secondary-900 transition-colors duration-300">
+        Create Classroom
+      </button>
 
-       {/* OR Divider */}
-       <div className="flex items-center justify-center">
-        <div className="w-1/3 border-t border-gray-200"></div>
-        <span className="mx-2 text-sm text-gray-300">OR</span>
-        <div className="w-1/3 border-t border-gray-200"></div>
+      <div className="flex items-center justify-center">
+        <div className="w-1/3 border-t border-secondary-600"></div>
+        <span className="mx-2 text-sm text-secondary-600">OR</span>
+        <div className="w-1/3 border-t border-secondary-600"></div>
       </div>
     </div>
   );

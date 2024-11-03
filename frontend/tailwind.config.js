@@ -28,7 +28,7 @@ export default {
           300: '#d3deff',
           400: '#c6d3ff',
           500: '#ECF0FF',  // Base
-          600: '#b6c2ff',
+          600: '#d1dbff',
           700: '#99a8ff',
           800: '#7a89ff',
           900: '#606eff',
