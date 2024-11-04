@@ -1,10 +1,11 @@
 import AuthPage from "./pages/AuthPage"
+import Setup from "./pages/SetupPage"
 
 function App() {
 
   return (
     <>
-      <AuthPage />
+      <Setup />
     </>
   )
 }
