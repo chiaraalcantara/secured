@@ -1,8 +1,8 @@
+import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-import Signup from "../components/Signup";
 import lockImage from "../assets/lock.png";
 import WATaiLogo from "../assets/WATaiLogo.svg";
-import { motion, AnimatePresence } from "framer-motion";
+import AuthForm from "../components/AuthForm";
 import LoadingPage from "./LoadingPage";
 
 const AuthPage = () => {
@@ -104,7 +104,7 @@ const AuthPage = () => {
               </div>
 
               {/* Forms */}
-              {isSignup && <Signup />}
+              <AuthForm isSignup={isSignup} />
             </div>
           </div>
         </motion.div>
