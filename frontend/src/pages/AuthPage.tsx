@@ -1,8 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
+import { SignIn, SignUp } from "@clerk/clerk-react";
 import lockImage from "../assets/lock.png";
 import WATaiLogo from "../assets/WATaiLogo.svg";
-import AuthForm from "../components/AuthForm";
 import LoadingPage from "./LoadingPage";
 
 const AuthPage = () => {
@@ -63,8 +63,8 @@ const AuthPage = () => {
           </div>
 
           {/* Right - Always visible, full width on mobile */}
-          <div className="flex-1 flex items-center justify-center">
-            <div className="p-6 w-full md:w-7/12 h-3/4">
+          <div className="flex-1 flex flex-col items-center justify-start">
+            <div className="p-6 w-full md:w-9/12 h-3/4">
               <div className="flex items-center mb-6">
                 <img
                   src={"securedPrimary.webp"}
@@ -103,8 +103,28 @@ const AuthPage = () => {
                 </div>
               </div>
 
-              {/* Forms */}
-              <AuthForm isSignup={isSignup} />
+              {/* Clerk Forms */}
+              {isSignup ? (
+                <SignUp
+                  appearance={{
+                    elements: {
+                      rootBox: "w-full",
+                      cardBox: "mx-auto",
+                      formButtonPrimary:"bg-primary-500 hover:bg-secondary-900 text-white rounded-lg",
+                    },
+                  }}
+                />
+              ) : (
+                <SignIn
+                  appearance={{
+                    elements: {
+                      rootBox: "w-full",
+                      cardBox: "mx-auto",
+                      formButtonPrimary: "bg-primary-500 hover:bg-secondary-900 text-white rounded-lg",
+                    },
+                  }}
+                />
+              )}
             </div>
           </div>
         </motion.div>
