@@ -64,8 +64,8 @@ const AuthPage = () => {
 
           {/* Right - Always visible, full width on mobile */}
           <div className="flex-1 flex flex-col items-center justify-start">
-            <div className="p-6 w-full md:w-9/12 h-3/4">
-              <div className="flex items-center mb-6">
+            <div className="pt-12 pb-6 w-full md:w-9/12 h-3/4">
+              <div className="flex items-center mb-6 w-5/6 mx-auto">
                 <img
                   src={"securedPrimary.webp"}
                   alt="Secured+ Logo"
@@ -75,7 +75,7 @@ const AuthPage = () => {
               </div>
 
               {/* Slider Toggle */}
-              <div className="relative w-full bg-secondary-500 rounded-lg p-2 mb-6">
+              <div className="relative mx-auto w-5/6 bg-secondary-500 rounded-lg p-2 mb-6">
                 <div
                   className={`absolute top-2 bottom-2 w-[calc(50%-8px)] transition-transform duration-300 ${
                     isSignup
@@ -109,8 +109,11 @@ const AuthPage = () => {
                   appearance={{
                     elements: {
                       rootBox: "w-full",
-                      cardBox: "mx-auto",
-                      formButtonPrimary:"bg-primary-500 hover:bg-secondary-900 text-white rounded-lg",
+                      cardBox: "w-5/6 mx-auto shadow-none",
+                      card: "shadow-none rounded-none pt-0 pb-0",
+                      formButtonPrimary:"bg-primary-500 shadow-none hover:bg-secondary-900 text-white rounded-lg",
+                      footer: "bg-white p-0",
+                      footerAction: "bg-white",
                     },
                   }}
                 />
@@ -119,8 +122,11 @@ const AuthPage = () => {
                   appearance={{
                     elements: {
                       rootBox: "w-full",
-                      cardBox: "mx-auto",
-                      formButtonPrimary: "bg-primary-500 hover:bg-secondary-900 text-white rounded-lg",
+                      cardBox: "w-5/6 mx-auto shadow-none",
+                      card: "shadow-none rounded-none pt-0 pb-0",
+                      formButtonPrimary:"bg-primary-500 shadow-none hover:bg-secondary-900 text-white rounded-lg",
+                      footer: "bg-white p-0",
+                      footerAction: "bg-white",
                     },
                   }}
                 />
