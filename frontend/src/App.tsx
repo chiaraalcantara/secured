@@ -3,13 +3,13 @@ import { SignedIn, SignedOut } from '@clerk/clerk-react';
 import AuthPage from './pages/AuthPage';
 import Setup from './pages/SetupPage';
 import HomePage from './pages/HomePage'; // New HomePage component
-
+import FaceDetectionPage from './pages/FaceDetectionPage';
 function App() {
   return (
     <header>
       <SignedOut>
         <Routes>
-          <Route path="/" element={<AuthPage />} />
+          <Route path="/" element={<FaceDetectionPage />} />
         </Routes>
       </SignedOut>
       <SignedIn>
